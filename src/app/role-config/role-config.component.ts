@@ -167,12 +167,12 @@ export class RoleConfigComponent implements AfterViewInit {
     const items: ConfirmCardItem[] = [];
 
     if (v.soi > 0) {
-      items.push({ name: 'Sói thường', img: 'assets/card2/soi_thuong.PNG', count: v.soi });
+      items.push({ name: 'Sói thường', img: this.thumbPath('soi_thuong.jpg'), count: v.soi });
     }
 
     this.wolfRoles.forEach(role => {
       if (v[role.key]) {
-        items.push({ name: role.name, img: `assets/card2/${role.fileName}` });
+        items.push({ name: role.name, img: this.thumbPath(role.fileName) });
       }
     });
 
@@ -192,12 +192,12 @@ export class RoleConfigComponent implements AfterViewInit {
     const items: ConfirmCardItem[] = [];
 
     if (v.dan > 0) {
-      items.push({ name: 'Dân thường', img: 'assets/card2/dan.jpg', count: v.dan });
+      items.push({ name: 'Dân thường', img: this.thumbPath('dan.jpg'), count: v.dan });
     }
 
     this.villagerRoles.forEach(role => {
       if (v[role.key]) {
-        items.push({ name: role.name, img: `assets/card2/${role.fileName}` });
+        items.push({ name: role.name, img: this.thumbPath(role.fileName) });
       }
     });
 
@@ -365,6 +365,10 @@ export class RoleConfigComponent implements AfterViewInit {
 
   trackRole(_: number, role: { key: SpecialRoleKey }) {
     return role.key;
+  }
+
+  thumbPath(fileName: string): string {
+    return `assets/card2/${fileName}`;
   }
 
   clearHistory() {

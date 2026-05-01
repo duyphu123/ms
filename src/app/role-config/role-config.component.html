@@ -62,7 +62,7 @@
         <div class="confirm-card-row" *ngIf="confirmWolfBaseItems.length">
           <div class="confirm-card" *ngFor="let card of confirmWolfBaseItems">
             <div class="confirm-card-thumb-wrap">
-              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" />
+              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="lazy" decoding="async" />
               <span class="confirm-card-count" *ngIf="card.count">x{{ card.count }}</span>
             </div>
             <div class="confirm-card-name">{{ card.name }}</div>
@@ -72,7 +72,7 @@
         <div class="confirm-card-row" *ngIf="confirmWolfSpecialItems.length">
           <div class="confirm-card" *ngFor="let card of confirmWolfSpecialItems">
             <div class="confirm-card-thumb-wrap">
-              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" />
+              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="lazy" decoding="async" />
               <span class="confirm-card-count" *ngIf="card.count">x{{ card.count }}</span>
             </div>
             <div class="confirm-card-name">{{ card.name }}</div>
@@ -90,7 +90,7 @@
         <div class="confirm-card-row" *ngIf="confirmVillagerBaseItems.length">
           <div class="confirm-card" *ngFor="let card of confirmVillagerBaseItems">
             <div class="confirm-card-thumb-wrap">
-              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" />
+              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="lazy" decoding="async" />
               <span class="confirm-card-count" *ngIf="card.count">x{{ card.count }}</span>
             </div>
             <div class="confirm-card-name">{{ card.name }}</div>
@@ -100,7 +100,7 @@
         <div class="confirm-card-row" *ngIf="confirmVillagerSpecialItems.length">
           <div class="confirm-card" *ngFor="let card of confirmVillagerSpecialItems">
             <div class="confirm-card-thumb-wrap">
-              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" />
+              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="lazy" decoding="async" />
               <span class="confirm-card-count" *ngIf="card.count">x{{ card.count }}</span>
             </div>
             <div class="confirm-card-name">{{ card.name }}</div>
@@ -162,7 +162,7 @@
             <input class="role-checkbox" type="checkbox" [formControlName]="role.key" />
             <span class="role-visual">
               <span class="checkmark">✓</span>
-              <img class="role-thumb" [src]="'assets/card2/' + role.fileName" [alt]="role.name" />
+              <img class="role-thumb" [src]="thumbPath(role.fileName)" [alt]="role.name" loading="lazy" decoding="async" />
               <span class="role-name">{{ role.name }}</span>
             </span>
           </label>
@@ -182,7 +182,7 @@
             <input class="role-checkbox" type="checkbox" [formControlName]="role.key" />
             <span class="role-visual">
               <span class="checkmark">✓</span>
-              <img class="role-thumb" [src]="'assets/card2/' + role.fileName" [alt]="role.name" />
+              <img class="role-thumb" [src]="thumbPath(role.fileName)" [alt]="role.name" loading="lazy" decoding="async" />
               <span class="role-name">{{ role.name }}</span>
             </span>
           </label>

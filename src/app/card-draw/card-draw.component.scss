@@ -82,10 +82,10 @@
 .card-zone {
   display: flex;
   justify-content: center;
-  margin: 18px 0 16px;
+  margin: 14px 0 12px;
 
   .card {
-    width: clamp(320px, 26vw,380px);
+    width: min(100%, 390px);
     aspect-ratio: 260 / 380;     /* giữ tỉ lệ */
     object-fit: cover;
     border-radius: 14px;
@@ -156,7 +156,11 @@ h3 { margin: 10px 0 8px; text-shadow: 0 0 14px rgba(192,122,44,.18); }
 
 /* đáp ứng */
 @media (max-width: 560px){
-  .wrap { padding: 14px; }
+  .wrap { padding: 12px; }
   .status { flex-direction: column; align-items: flex-start; gap: 6px; }
   .list { grid-template-columns: 1fr; }
+
+  .card-zone .card {
+    width: min(100%, 420px);
+  }
 }

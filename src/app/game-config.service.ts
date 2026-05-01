@@ -53,28 +53,28 @@ export interface SpecialRoleDef {
 
 export const SPECIAL_ROLE_DEFS: ReadonlyArray<SpecialRoleDef> = [
   { key: 'phanBoi', name: 'Phản bội', fileName: 'phanboi.jpg' },
-  { key: 'soiNguyen', name: 'Sói nguyền', fileName: 'soi_nguyen.PNG' },
-  { key: 'soiNguoi', name: 'Sói người', fileName: 'soi_nguoi.PNG' },
-  { key: 'baoVe', name: 'Bảo vệ', fileName: 'baove.PNG' },
+  { key: 'soiNguyen', name: 'Sói nguyền', fileName: 'soi_nguyen.jpg' },
+  { key: 'soiNguoi', name: 'Sói người', fileName: 'soi_nguoi.jpg' },
+  { key: 'baoVe', name: 'Bảo vệ', fileName: 'baove.jpg' },
   { key: 'tietLo', name: 'Tiết lộ', fileName: 'tietlo.jpg' },
-  { key: 'phuThuy', name: 'Phù thủy', fileName: 'phuthuy.PNG' },
-  { key: 'tienTri', name: 'Tiên tri', fileName: 'tientri.PNG' },
+  { key: 'phuThuy', name: 'Phù thủy', fileName: 'phuthuy.jpg' },
+  { key: 'tienTri', name: 'Tiên tri', fileName: 'tientri.jpg' },
   { key: 'cungCoi', name: 'Cứng cỏi', fileName: 'cungcoi.jpg' },
-  { key: 'hoangTu', name: 'Hoàng tử', fileName: 'hoangtu.PNG' },
+  { key: 'hoangTu', name: 'Hoàng tử', fileName: 'hoangtu.jpg' },
   { key: 'tuSi', name: 'Tu sĩ', fileName: 'tusi.jpg' },
   { key: 'tamLinh', name: 'Tâm linh', fileName: 'tamlinh.jpg' },
-  { key: 'thauCam', name: 'Thấu cảm', fileName: 'thaucam.PNG' },
-  { key: 'matNgu', name: 'Mất ngủ', fileName: 'matngu.PNG' },
-  { key: 'soiCon', name: 'Sói con', fileName: 'soi_con.PNG' },
+  { key: 'thauCam', name: 'Thấu cảm', fileName: 'thaucam.jpg' },
+  { key: 'matNgu', name: 'Mất ngủ', fileName: 'matngu.jpg' },
+  { key: 'soiCon', name: 'Sói con', fileName: 'soi_con.jpg' },
   { key: 'cao', name: 'Cáo', fileName: 'cao.jpg' },
   { key: 'gau', name: 'Gấu', fileName: 'gau.jpg' },
-  { key: 'giaLang', name: 'Già làng', fileName: 'gialang.PNG' },
-  { key: 'lieu', name: 'Liễu', fileName: 'lieu.PNG' },
-  { key: 'nhanBan', name: 'Nhân bản', fileName: 'nhanban.PNG' },
+  { key: 'giaLang', name: 'Già làng', fileName: 'gialang.jpg' },
+  { key: 'lieu', name: 'Liễu', fileName: 'lieu.jpg' },
+  { key: 'nhanBan', name: 'Nhân bản', fileName: 'nhanban.jpg' },
   { key: 'sinhDoi', name: 'Sinh đôi', fileName: 'sinhdoi.jpg' },
-  { key: 'soiBanSoi', name: 'Bán sói', fileName: 'soi_bansoi.PNG' },
-  { key: 'soiNgu', name: 'Sói ngu', fileName: 'soi_ngu.PNG' },
-  { key: 'soiTri', name: 'Sói tri', fileName: 'soi_tri.PNG' },
+  { key: 'soiBanSoi', name: 'Bán sói', fileName: 'soi_bansoi.jpg' },
+  { key: 'soiNgu', name: 'Sói ngu', fileName: 'soi_ngu.jpg' },
+  { key: 'soiTri', name: 'Sói tri', fileName: 'soi_tri.jpg' },
   { key: 'hunter', name: 'Thợ săn', fileName: 'hunter.jpg' },
 ];
 
@@ -121,7 +121,7 @@ export const MODE_ROLE_KEYS: Record<GameMode, SpecialRoleKey[]> = {
 };
 
 const BASE_FILE_MAP: Record<string, string> = {
-  'Sói': 'soi_thuong.PNG',
+  'Sói': 'soi_thuong.jpg',
   'Dân': 'dan.jpg',
 };
 

@@ -1,0 +1,41 @@
+<div class="wrap">
+  <div class="topbar">
+    <button class="icon-back" (click)="goBack()" aria-label="Quay lại">
+      <!-- SVG mũi tên trái -->
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Quay lại</span>
+    </button>
+
+    <h2>Rút bài</h2>
+  </div>
+
+  <div class="status">
+    <div><strong>Tổng còn:</strong> {{ remaining }}</div>
+    <!-- <div *ngIf="revealed" class="now">
+      <span>Đang mở:</span>
+      <span class="badge">{{ revealed.name }}</span>
+    </div> -->
+  </div>
+
+  <!-- Khu vực lá bài -->
+  <div class="card-zone">
+    <img *ngIf="!revealed" class="card" [src]="backImg" alt="Mặt sau" (click)="onClickBack()" />
+    <img *ngIf="revealed" class="card" [src]="revealed.img" [alt]="revealed.name" (error)="onImgError($event)" />
+  </div>
+
+  <div class="actions">
+    <button (click)="hideCurrent()" [disabled]="!revealed">Ẩn bài</button>
+    <!-- <button (click)="resetDeck()">Làm mới bộ bài</button>
+    <button routerLink="/cau-hinh">Về cấu hình</button> -->
+  </div>
+
+  <!-- <h3>Các loại còn lại</h3>
+  <div class="list">
+    <div class="item" *ngFor="let it of getCounts()">
+      <span>{{ it.name }}</span>
+      <span>x{{ it.count }}</span>
+    </div>
+  </div> -->
+</div>

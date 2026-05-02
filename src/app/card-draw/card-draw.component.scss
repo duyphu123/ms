@@ -1,9 +1,8 @@
-/* ===== Werewolf Card Draw — dark glass style ===== */
+/* ===== Werewolf Card Draw - dark glass style ===== */
 
-/* fallback nếu bạn chưa khai biến global */
 :root{
   --ww-bg: #0c0b0b;
-  --ww-primary: #c07a2c;      /* đồng */
+  --ww-primary: #c07a2c;
   --ww-primary-2: #9c6122;
   --ww-text: #e9e0d6;
   --ww-muted: #b9ac9f;
@@ -12,7 +11,6 @@
   --ww-blur: 10px;
 }
 
-/* khung trang */
 .wrap {
   max-width: 920px;
   margin: 28px auto;
@@ -26,7 +24,6 @@
   box-shadow: 0 12px 42px rgba(0,0,0,.45);
 }
 
-/* topbar + nút back */
 .topbar {
   display: flex;
   align-items: center;
@@ -57,7 +54,6 @@
   }
 }
 
-/* status */
 .status {
   display: flex;
   justify-content: space-between;
@@ -65,20 +61,8 @@
   margin-top: 6px;
 
   strong { color: var(--ww-muted); }
-
-  .now {
-    display: flex; gap: 8px; align-items: center;
-  }
-  .badge {
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, var(--ww-primary), var(--ww-primary-2));
-    color: #fff;
-    box-shadow: 0 8px 22px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
-  }
 }
 
-/* vùng lá bài */
 .card-zone {
   display: flex;
   justify-content: center;
@@ -86,21 +70,15 @@
 
   .card {
     width: min(100%, 390px);
-    aspect-ratio: 260 / 380;     /* giữ tỉ lệ */
+    aspect-ratio: 260 / 380;
     object-fit: cover;
     border-radius: 14px;
     box-shadow: 0 14px 40px rgba(0,0,0,.45);
     user-select: none;
-    backface-visibility: hidden;
-    transition: transform .18s ease, filter .2s ease, box-shadow .2s ease;
-
-    /* hiệu ứng khi có thể bấm rút */
-    &:hover { transform: translateY(-2px); filter: brightness(1.03); }
-    &:active { transform: translateY(-1px) scale(.99); }
+    transition: filter .2s ease, box-shadow .2s ease;
   }
 }
 
-/* nút hành động */
 .actions {
   display: flex;
   gap: 10px;
@@ -122,45 +100,60 @@
     &:active { transform: scale(.98); }
     &:disabled { opacity: .6; cursor: not-allowed; }
   }
-
-  /* nút phụ */
-  button:nth-child(2) {
-    background: linear-gradient(180deg, #5d6a71, #455a64);
-  }
-  button:nth-child(3) {
-    background: linear-gradient(180deg, #a1a1a1, #8a8a8a);
-  }
 }
 
-/* danh sách còn lại */
-h3 { margin: 10px 0 8px; text-shadow: 0 0 14px rgba(192,122,44,.18); }
-.list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
-
-  .item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 12px;
-    border: 1px solid var(--ww-border);
-    border-radius: 10px;
-    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.12));
-    color: var(--ww-text);
-
-    span:last-child{
-      color: var(--ww-muted);
-      font-weight: 600;
-    }
-  }
-}
-
-/* đáp ứng */
 @media (max-width: 560px){
   .wrap { padding: 12px; }
   .status { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .list { grid-template-columns: 1fr; }
 
   .card-zone .card {
     width: min(100%, 420px);
   }
+}
+
+.done-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.done-modal {
+  width: 100%;
+  max-width: 360px;
+  padding: 18px;
+  border: 1px solid var(--ww-border);
+  border-radius: 18px;
+  background: #1b1c22;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.36);
+
+  h3 {
+    margin: 0 0 16px;
+    text-align: center;
+    color: var(--ww-text);
+  }
+}
+
+.done-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  button {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  }
+}
+
+.done-history-btn {
+  background: linear-gradient(180deg, var(--ww-primary), var(--ww-primary-2)) !important;
 }

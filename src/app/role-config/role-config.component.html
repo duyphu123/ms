@@ -50,7 +50,15 @@
 
 <div *ngIf="showConfirmModal" class="confirm-overlay" (click)="closeConfirmModal()">
   <div class="confirm-modal" (click)="$event.stopPropagation()">
-    <h3>Xác nhận cấu hình</h3>
+    <div class="confirm-modal-head">
+      <button class="confirm-icon-btn confirm-icon-btn-back" type="button" (click)="closeConfirmModal()" aria-label="Quay lại">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h3>Confirm</h3>
+      <button class="confirm-icon-btn confirm-icon-btn-submit" type="button" (click)="submitConfirmedGame()" aria-label="Xác nhận">&#10003;</button>
+    </div>
 
     <div class="confirm-stats">
       <div class="confirm-stat-card">
@@ -103,10 +111,6 @@
       </ng-template>
     </div>
 
-    <div class="confirm-actions">
-      <button type="button" (click)="closeConfirmModal()">Quay lại</button>
-      <button class="btn-submit" type="button" (click)="submitConfirmedGame()">Xác nhận</button>
-    </div>
   </div>
 </div>
 
@@ -228,16 +232,24 @@
       <button class="btn-clear" (click)="clearHistory()" [disabled]="!history?.length">Xoá lịch sử</button>
     </div>
 
+    <div class="history-filters" *ngIf="history?.length">
+      <button class="history-filter history-filter-all" [class.active]="historyFilter === 'all'" (click)="setHistoryFilter('all')">#</button>
+      <button class="history-filter history-filter-wolf" [class.active]="historyFilter === 'wolf'" (click)="setHistoryFilter('wolf')">Sói</button>
+      <button class="history-filter history-filter-special" [class.active]="historyFilter === 'special'" (click)="setHistoryFilter('special')">Chức năng</button>
+      <button class="history-filter history-filter-villager" [class.active]="historyFilter === 'villager'" (click)="setHistoryFilter('villager')">Dân</button>
+    </div>
+
     <div *ngIf="!history?.length" class="empty">Chưa có lịch sử rút.</div>
 
     <div class="history-list" *ngIf="history?.length">
-      <div class="row" *ngFor="let h of history" [ngClass]="getRoleClass(h.card.name)">
+      <div class="row" *ngFor="let h of filteredHistory" [ngClass]="getRoleClass(h.card.name)">
         <div class="order">#{{ h.order }}</div>
         <div class="name">{{ h.card.name }}</div>
         <input
           class="player-input"
           [(ngModel)]="h.playerName"
           [ngModelOptions]="{ standalone: true }"
+          maxlength="16"
           (ngModelChange)="onPlayerNameChange(h)"
         />
       </div>

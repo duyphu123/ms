@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import {
@@ -29,6 +29,7 @@ export class RoleConfigComponent implements AfterViewInit {
   form: FormGroup;
   activeMode: GameMode = 'ultimate';
   activeTab: 'config' | 'history' = 'config';
+  historyFilter: 'all' | 'wolf' | 'villager' | 'special' = 'all';
   history: HistoryItem[] = [];
   showConfirmModal = false;
   showAddCardModal = false;
@@ -36,6 +37,8 @@ export class RoleConfigComponent implements AfterViewInit {
   addCardName = '';
   configPanelHeight = 0;
   configPanelTop = 0;
+  private configPanelStartTop = 0;
+  private panelRafId = 0;
 
   readonly modeTabs: Array<{ key: GameMode; label: string }> = [
     { key: 'ultimate', label: 'Ultimate' },
@@ -74,6 +77,7 @@ export class RoleConfigComponent implements AfterViewInit {
 
   constructor(
     private fb: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private gameCfg: GameConfigService
   ) {
@@ -124,6 +128,22 @@ export class RoleConfigComponent implements AfterViewInit {
 
   get extraVillagerCards(): ExtraCardDef[] {
     return this.gameCfg.getExtraCards('villager', this.activeMode);
+  }
+
+  get filteredHistory(): HistoryItem[] {
+    if (this.historyFilter === 'wolf') {
+      return this.history.filter(item => this.isWolfRoleName(item.card.name));
+    }
+
+    if (this.historyFilter === 'villager') {
+      return this.history.filter(item => item.card.name === 'Dân');
+    }
+
+    if (this.historyFilter === 'special') {
+      return this.history.filter(item => !this.isWolfRoleName(item.card.name) && item.card.name !== 'Dân');
+    }
+
+    return this.history;
   }
 
   get total(): number {
@@ -239,27 +259,39 @@ export class RoleConfigComponent implements AfterViewInit {
     this.activeMode = mode;
     this.showConfirmModal = false;
     this.showAddCardModal = false;
+    this.historyFilter = 'all';
     this.gameCfg.setMode(mode);
     this.loadModeState();
     if (this.activeTab === 'history') this.reloadHistory();
-    setTimeout(() => this.measureConfigPanel(), 0);
+    setTimeout(() => {
+      this.measureConfigPanel();
+      this.syncPanelLoop();
+    }, 0);
   }
 
   switchTab(tab: 'config' | 'history') {
     this.activeTab = tab;
     this.showConfirmModal = false;
     this.showAddCardModal = false;
+    this.historyFilter = 'all';
     if (tab === 'history') {
+      this.stopPanelLoop();
       this.reloadHistory();
       return;
     }
-    setTimeout(() => this.measureConfigPanel(), 0);
+    setTimeout(() => {
+      this.measureConfigPanel();
+      this.syncPanelLoop();
+    }, 0);
   }
 
   ngOnInit(): void {
     this.activeMode = this.gameCfg.getMode();
     this.gameCfg.setMode(this.activeMode);
     this.loadModeState();
+
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    if (tab === 'history') this.activeTab = 'history';
 
     this.sub = this.form.valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
@@ -269,15 +301,29 @@ export class RoleConfigComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.measureConfigPanel(), 0);
+    setTimeout(() => {
+      this.measureConfigPanel();
+      this.syncPanelLoop();
+    }, 0);
   }
 
   ngOnDestroy(): void {
     if (this.sub) this.sub.unsubscribe();
+    this.stopPanelLoop();
   }
 
   @HostListener('window:scroll')
   onWindowScroll() {
+    this.measureConfigPanel();
+  }
+
+  @HostListener('document:scroll')
+  onDocumentScroll() {
+    this.measureConfigPanel();
+  }
+
+  @HostListener('window:touchmove')
+  onWindowTouchMove() {
     this.measureConfigPanel();
   }
 
@@ -307,8 +353,38 @@ export class RoleConfigComponent implements AfterViewInit {
 
     const tabsRect = this.tabsAnchor.nativeElement.getBoundingClientRect();
     const panelRect = this.configPanel.nativeElement.getBoundingClientRect();
-    this.configPanelTop = Math.max(8, Math.round(tabsRect.bottom + 8));
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const naturalTop = Math.round(tabsRect.bottom + 8);
+
+    if (!this.configPanelStartTop || scrollTop === 0) {
+      this.configPanelStartTop = naturalTop;
+    }
+
+    this.configPanelTop = Math.max(38, Math.round(this.configPanelStartTop - scrollTop));
     this.configPanelHeight = Math.ceil(panelRect.height);
+  }
+
+  private syncPanelLoop() {
+    this.stopPanelLoop();
+    if (this.activeTab !== 'config') return;
+
+    const tick = () => {
+      if (this.activeTab !== 'config') {
+        this.panelRafId = 0;
+        return;
+      }
+
+      this.measureConfigPanel();
+      this.panelRafId = window.requestAnimationFrame(tick);
+    };
+
+    this.panelRafId = window.requestAnimationFrame(tick);
+  }
+
+  private stopPanelLoop() {
+    if (!this.panelRafId) return;
+    window.cancelAnimationFrame(this.panelRafId);
+    this.panelRafId = 0;
   }
 
   private markAllTouched(control: AbstractControl): void {
@@ -400,11 +476,10 @@ export class RoleConfigComponent implements AfterViewInit {
   }
 
   getRoleClass(name: string): string {
-    const n = (name || '').toLowerCase().normalize('NFC');
-    if (n.includes('phản bội')) return 'traitor';
-    if (n.includes('sói người')) return 'wolf-human';
     if (this.isWolfRoleName(name)) return 'wolf';
-    return '';
+    if (name === 'Dân') return 'villager';
+    if (name !== 'Sói' && name !== 'Dân') return 'special';
+    return 'villager';
   }
 
   onPlayerNameChange(h: HistoryItem) {
@@ -422,6 +497,10 @@ export class RoleConfigComponent implements AfterViewInit {
   clearHistory() {
     this.gameCfg.clearHistory(this.activeMode);
     this.reloadHistory();
+  }
+
+  setHistoryFilter(filter: 'all' | 'wolf' | 'villager' | 'special') {
+    this.historyFilter = filter;
   }
 
   private isWolfRoleName(name: string): boolean {

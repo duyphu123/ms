@@ -10,6 +10,7 @@ import { Card, GameConfigService } from '../game-config.service';
 export class CardDrawComponent implements OnInit {
   queue: Card[] = [];
   revealed: Card | null = null;
+  showDoneModal = false;
   readonly backImg = 'assets/cards/back2.jpg';
   @ViewChild('actionAnchor') actionAnchor?: ElementRef;
 
@@ -28,6 +29,7 @@ export class CardDrawComponent implements OnInit {
     const full = this.cfg.buildDeck();
     this.queue = this.shuffleBalanced(full);
     this.revealed = null;
+    this.showDoneModal = false;
     this.preloadFrontImages();
     setTimeout(() => this.scrollToActionZone(), 0);
   }
@@ -39,7 +41,7 @@ export class CardDrawComponent implements OnInit {
   onClickBack() {
     if (this.revealed) return;
     if (this.queue.length === 0) {
-      alert('Da rut het bai!');
+      this.openDoneModal();
       return;
     }
 
@@ -52,6 +54,7 @@ export class CardDrawComponent implements OnInit {
   hideCurrent() {
     if (!this.revealed) return;
     this.revealed = null;
+    if (this.queue.length === 0) this.openDoneModal();
   }
 
   resetDeck() {
@@ -62,6 +65,7 @@ export class CardDrawComponent implements OnInit {
     const full = this.cfg.buildDeck();
     this.queue = this.shuffleBalanced(full);
     this.revealed = null;
+    this.showDoneModal = false;
     this.preloadFrontImages();
   }
 
@@ -140,6 +144,18 @@ export class CardDrawComponent implements OnInit {
 
   goBack() {
     this.router.navigateByUrl('/cau-hinh');
+  }
+
+  goToHistory() {
+    this.router.navigate(['/cau-hinh'], { queryParams: { tab: 'history' } });
+  }
+
+  closeDoneModal() {
+    this.showDoneModal = false;
+  }
+
+  private openDoneModal() {
+    this.showDoneModal = true;
   }
 
   private scrollToActionZone() {

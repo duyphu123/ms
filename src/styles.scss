@@ -14,7 +14,7 @@ html, body {
   height: 100%;
   min-height: 100dvh;
   background: var(--ww-bg);
-  touch-action: manipulation;
+  touch-action: auto;
   overscroll-behavior-y: none;
   overscroll-behavior-x: none;
   overflow-x: hidden;
@@ -51,7 +51,7 @@ button{
 }
 
 img, a, label {
-  touch-action: manipulation;
+  touch-action: auto;
 }
 button:disabled{ opacity:.6; cursor:not-allowed; }
 button:hover{ filter: brightness(1.05); }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Card, GameConfigService } from '../game-config.service';
 
@@ -11,6 +11,7 @@ export class CardDrawComponent implements OnInit {
   queue: Card[] = [];
   revealed: Card | null = null;
   readonly backImg = 'assets/cards/back2.jpg';
+  @ViewChild('actionAnchor') actionAnchor?: ElementRef;
 
   private currentMode = this.cfg.getMode();
 
@@ -28,6 +29,7 @@ export class CardDrawComponent implements OnInit {
     this.queue = this.shuffleBalanced(full);
     this.revealed = null;
     this.preloadFrontImages();
+    setTimeout(() => this.scrollToActionZone(), 0);
   }
 
   get remaining(): number {
@@ -44,6 +46,7 @@ export class CardDrawComponent implements OnInit {
     const card = this.queue.shift()!;
     this.revealed = card;
     this.cfg.addHistory(card);
+    setTimeout(() => this.scrollToActionZone(), 0);
   }
 
   hideCurrent() {
@@ -84,12 +87,20 @@ export class CardDrawComponent implements OnInit {
     return this.cfg.isWolfCardName(name, this.currentMode);
   }
 
+  private isTwinCard(card: Card): boolean {
+    return /sinhdoi\.jpg$/i.test(card.img || '');
+  }
+
   private adjacencyPenalty(deck: Card[]): number {
     let score = 0;
     let run = 1;
     const sameGroup = (a: Card, b: Card) => this.isWolfCard(a.name) === this.isWolfCard(b.name);
 
     for (let i = 1; i < deck.length; i++) {
+      if (this.isTwinCard(deck[i]) && this.isTwinCard(deck[i - 1])) {
+        score += 50;
+      }
+
       if (sameGroup(deck[i], deck[i - 1])) {
         run++;
         if (run === 3) score += 2;
@@ -129,5 +140,18 @@ export class CardDrawComponent implements OnInit {
 
   goBack() {
     this.router.navigateByUrl('/cau-hinh');
+  }
+
+  private scrollToActionZone() {
+    if (!this.actionAnchor) return;
+
+    const rect = this.actionAnchor.nativeElement.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const targetTop = window.pageYOffset + rect.bottom - viewportHeight + 16;
+
+    window.scrollTo({
+      top: Math.max(0, Math.round(targetTop)),
+      behavior: 'smooth'
+    });
   }
 }

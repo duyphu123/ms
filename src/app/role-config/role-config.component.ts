@@ -4,13 +4,12 @@ import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import {
+  CardTeam,
+  ExtraCardDef,
   GameConfigService,
   GameMode,
   HistoryItem,
-  MODE_ROLE_KEYS,
-  MODE_WOLF_ROLE_KEYS,
   RoleConfig,
-  SPECIAL_ROLE_DEFS,
   SpecialRoleDef,
   SpecialRoleKey,
 } from '../game-config.service';
@@ -32,6 +31,9 @@ export class RoleConfigComponent implements AfterViewInit {
   activeTab: 'config' | 'history' = 'config';
   history: HistoryItem[] = [];
   showConfirmModal = false;
+  showAddCardModal = false;
+  addCardTeam: CardTeam = 'wolf';
+  addCardName = '';
   configPanelHeight = 0;
   configPanelTop = 0;
 
@@ -76,8 +78,8 @@ export class RoleConfigComponent implements AfterViewInit {
     private gameCfg: GameConfigService
   ) {
     this.form = this.fb.group({
-      soi: [this.defaults.soi, [Validators.required, Validators.min(0)]],
-      dan: [this.defaults.dan, [Validators.required, Validators.min(0)]],
+      soi: [this.defaults.soi, [Validators.required, Validators.min(0), Validators.max(99)]],
+      dan: [this.defaults.dan, [Validators.required, Validators.min(0), Validators.max(99)]],
       phanBoi: [this.defaults.phanBoi],
       soiNguyen: [this.defaults.soiNguyen],
       soiNguoi: [this.defaults.soiNguoi],
@@ -109,37 +111,43 @@ export class RoleConfigComponent implements AfterViewInit {
   @ViewChild('configPanel') configPanel?: ElementRef;
 
   get wolfRoles(): SpecialRoleDef[] {
-    const wolfKeys = MODE_WOLF_ROLE_KEYS[this.activeMode];
-    const allowedKeys = MODE_ROLE_KEYS[this.activeMode];
-    return SPECIAL_ROLE_DEFS.filter(role => {
-      return allowedKeys.indexOf(role.key) >= 0 && wolfKeys.indexOf(role.key) >= 0;
-    });
+    return this.gameCfg.getWolfRolesForMode(this.activeMode);
   }
 
   get villagerRoles(): SpecialRoleDef[] {
-    const wolfKeys = MODE_WOLF_ROLE_KEYS[this.activeMode];
-    const allowedKeys = MODE_ROLE_KEYS[this.activeMode];
-    return SPECIAL_ROLE_DEFS.filter(role => {
-      return allowedKeys.indexOf(role.key) >= 0 && wolfKeys.indexOf(role.key) < 0;
-    });
+    return this.gameCfg.getVillagerRolesForMode(this.activeMode);
+  }
+
+  get extraWolfCards(): ExtraCardDef[] {
+    return this.gameCfg.getExtraCards('wolf', this.activeMode);
+  }
+
+  get extraVillagerCards(): ExtraCardDef[] {
+    return this.gameCfg.getExtraCards('villager', this.activeMode);
   }
 
   get total(): number {
     const v = this.form.value as RoleConfig;
     const visibleRoles = this.wolfRoles.concat(this.villagerRoles);
     const base = (v.soi || 0) + (v.dan || 0);
-    const extra = visibleRoles.reduce((acc, role) => acc + (v[role.key] ? 1 : 0), 0);
-    return base + extra;
+    const extra = visibleRoles.reduce((acc, role) => {
+      return acc + (v[role.key] ? this.gameCfg.getRoleCopies(role.key, this.activeMode) : 0);
+    }, 0);
+    return base + extra + this.extraWolfCards.filter(card => card.enabled).length + this.extraVillagerCards.filter(card => card.enabled).length;
   }
 
   get wolfCount(): number {
     const v = this.form.value as RoleConfig;
-    return (v.soi || 0) + this.wolfRoles.reduce((acc, role) => acc + (v[role.key] ? 1 : 0), 0);
+    return (v.soi || 0) + this.wolfRoles.reduce((acc, role) => {
+      return acc + (v[role.key] ? this.gameCfg.getRoleCopies(role.key, this.activeMode) : 0);
+    }, 0) + this.extraWolfCards.filter(card => card.enabled).length;
   }
 
   get villagerCount(): number {
     const v = this.form.value as RoleConfig;
-    return (v.dan || 0) + this.villagerRoles.reduce((acc, role) => acc + (v[role.key] ? 1 : 0), 0);
+    return (v.dan || 0) + this.villagerRoles.reduce((acc, role) => {
+      return acc + (v[role.key] ? this.gameCfg.getRoleCopies(role.key, this.activeMode) : 0);
+    }, 0) + this.extraVillagerCards.filter(card => card.enabled).length;
   }
 
   get confirmWolfCards(): string[] {
@@ -172,8 +180,15 @@ export class RoleConfigComponent implements AfterViewInit {
 
     this.wolfRoles.forEach(role => {
       if (v[role.key]) {
-        items.push({ name: role.name, img: this.thumbPath(role.fileName) });
+        const copies = this.gameCfg.getRoleCopies(role.key, this.activeMode);
+        for (let i = 0; i < copies; i++) {
+          items.push({ name: role.name, img: this.thumbPath(role.fileName) });
+        }
       }
+    });
+
+    this.extraWolfCards.filter(card => card.enabled).forEach(card => {
+      items.push({ name: card.name, img: card.img });
     });
 
     return items;
@@ -197,8 +212,15 @@ export class RoleConfigComponent implements AfterViewInit {
 
     this.villagerRoles.forEach(role => {
       if (v[role.key]) {
-        items.push({ name: role.name, img: this.thumbPath(role.fileName) });
+        const copies = this.gameCfg.getRoleCopies(role.key, this.activeMode);
+        for (let i = 0; i < copies; i++) {
+          items.push({ name: role.name, img: this.thumbPath(role.fileName) });
+        }
       }
+    });
+
+    this.extraVillagerCards.filter(card => card.enabled).forEach(card => {
+      items.push({ name: card.name, img: card.img });
     });
 
     return items;
@@ -216,6 +238,7 @@ export class RoleConfigComponent implements AfterViewInit {
     if (this.activeMode === mode) return;
     this.activeMode = mode;
     this.showConfirmModal = false;
+    this.showAddCardModal = false;
     this.gameCfg.setMode(mode);
     this.loadModeState();
     if (this.activeTab === 'history') this.reloadHistory();
@@ -225,6 +248,7 @@ export class RoleConfigComponent implements AfterViewInit {
   switchTab(tab: 'config' | 'history') {
     this.activeTab = tab;
     this.showConfirmModal = false;
+    this.showAddCardModal = false;
     if (tab === 'history') {
       this.reloadHistory();
       return;
@@ -310,7 +334,7 @@ export class RoleConfigComponent implements AfterViewInit {
     const input = event.target as HTMLInputElement;
     const digitsOnly = (input.value || '').replace(/\D+/g, '');
     const normalized = digitsOnly.replace(/^0+(?=\d)/, '');
-    const nextValue = normalized === '' ? 0 : Number(normalized);
+    const nextValue = normalized === '' ? 0 : Math.min(99, Number(normalized));
 
     if (input.value !== String(nextValue)) {
       input.value = String(nextValue);
@@ -323,7 +347,9 @@ export class RoleConfigComponent implements AfterViewInit {
 
   reset() {
     this.showConfirmModal = false;
+    this.showAddCardModal = false;
     this.form.reset(this.defaults);
+    this.gameCfg.clearExtraCards(this.activeMode);
     this.gameCfg.setConfig(this.form.value as RoleConfig, this.activeMode);
   }
 
@@ -341,6 +367,28 @@ export class RoleConfigComponent implements AfterViewInit {
 
   closeConfirmModal() {
     this.showConfirmModal = false;
+  }
+
+  openAddCardModal(team: CardTeam) {
+    this.showConfirmModal = false;
+    this.addCardTeam = team;
+    this.addCardName = '';
+    this.showAddCardModal = true;
+  }
+
+  closeAddCardModal() {
+    this.showAddCardModal = false;
+    this.addCardName = '';
+  }
+
+  submitAddCard() {
+    const created = this.gameCfg.addExtraCard(this.addCardName, this.addCardTeam, this.activeMode);
+    if (!created) return;
+    this.closeAddCardModal();
+  }
+
+  toggleExtraCard(card: ExtraCardDef) {
+    this.gameCfg.setExtraCardEnabled(card.id, card.team, !card.enabled, this.activeMode);
   }
 
   submitConfirmedGame() {

@@ -25,7 +25,7 @@
     <img *ngIf="revealed" class="card" [src]="revealed.img" [alt]="revealed.name" (error)="onImgError($event)" />
   </div>
 
-  <div class="actions">
+  <div class="actions" #actionAnchor>
     <button (click)="hideCurrent()" [disabled]="!revealed">Ẩn bài</button>
     <!-- <button (click)="resetDeck()">Làm mới bộ bài</button>
     <button routerLink="/cau-hinh">Về cấu hình</button> -->

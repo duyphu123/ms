@@ -81,7 +81,7 @@
         <div class="confirm-card-row">
           <div class="confirm-card" *ngFor="let card of confirmWolfItems" [class.confirm-card-base]="card.count">
             <div class="confirm-card-thumb-wrap">
-              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="lazy" decoding="async" />
+              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="eager" decoding="sync" (error)="onThumbError($event)" />
               <span class="confirm-card-count" *ngIf="card.count">x{{ card.count }}</span>
             </div>
             <div class="confirm-card-name">{{ card.name }}</div>
@@ -99,7 +99,7 @@
         <div class="confirm-card-row">
           <div class="confirm-card" *ngFor="let card of confirmVillagerItems" [class.confirm-card-base]="card.count">
             <div class="confirm-card-thumb-wrap">
-              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="lazy" decoding="async" />
+              <img class="confirm-card-thumb" [src]="card.img" [alt]="card.name" loading="eager" decoding="sync" (error)="onThumbError($event)" />
               <span class="confirm-card-count" *ngIf="card.count">x{{ card.count }}</span>
             </div>
             <div class="confirm-card-name">{{ card.name }}</div>

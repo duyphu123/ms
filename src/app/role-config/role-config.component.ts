@@ -494,6 +494,10 @@ export class RoleConfigComponent implements AfterViewInit {
     return `assets/card2/${fileName}`;
   }
 
+  onThumbError(event: Event) {
+    (event.target as HTMLImageElement).src = 'assets/card2/dan.jpg';
+  }
+
   clearHistory() {
     this.gameCfg.clearHistory(this.activeMode);
     this.reloadHistory();

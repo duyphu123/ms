@@ -20,7 +20,7 @@
   </div>
 
   <div class="actions" #actionAnchor>
-    <button (click)="hideCurrent()" [disabled]="!revealed">Ẩn bài</button>
+    <button #hideButton (click)="hideCurrent()" [disabled]="!revealed">Ẩn bài</button>
   </div>
 
   <div *ngIf="showDoneModal" class="done-overlay" (click)="closeDoneModal()">

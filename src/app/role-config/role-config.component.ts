@@ -73,6 +73,7 @@ export class RoleConfigComponent implements AfterViewInit {
     soiNgu: false,
     soiTri: false,
     hunter: false,
+    cupid: false,
   };
 
   constructor(
@@ -108,6 +109,7 @@ export class RoleConfigComponent implements AfterViewInit {
       soiNgu: [this.defaults.soiNgu],
       soiTri: [this.defaults.soiTri],
       hunter: [this.defaults.hunter],
+      cupid: [this.defaults.cupid],
     });
   }
 

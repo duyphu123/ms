@@ -38,6 +38,7 @@ export interface RoleConfig {
   soiNgu: boolean;
   soiTri: boolean;
   hunter: boolean;
+  cupid: boolean;
 }
 
 export interface Card {
@@ -88,6 +89,7 @@ export const SPECIAL_ROLE_DEFS: ReadonlyArray<SpecialRoleDef> = [
   { key: 'soiNgu', name: 'Sói ngu', fileName: 'soi_ngu.jpg' },
   { key: 'soiTri', name: 'Sói tri', fileName: 'soi_tri.jpg' },
   { key: 'hunter', name: 'Thợ săn', fileName: 'hunter.jpg' },
+  { key: 'cupid', name: 'Cupid', fileName: 'cupid.jpg' },
 ];
 
 export const MODE_WOLF_ROLE_KEYS: Record<GameMode, SpecialRoleKey[]> = {
@@ -129,6 +131,7 @@ export const MODE_ROLE_KEYS: Record<GameMode, SpecialRoleKey[]> = {
     'soiNgu',
     'soiTri',
     'hoangTu',
+    'cupid',
   ],
 };
 

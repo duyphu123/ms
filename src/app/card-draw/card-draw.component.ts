@@ -12,6 +12,7 @@ export class CardDrawComponent implements OnInit {
   revealed: Card | null = null;
   showDoneModal = false;
   readonly backImg = 'assets/cards/back2.jpg';
+  @ViewChild('hideButton') hideButton?: ElementRef;
   @ViewChild('actionAnchor') actionAnchor?: ElementRef;
 
   private currentMode = this.cfg.getMode();
@@ -159,11 +160,12 @@ export class CardDrawComponent implements OnInit {
   }
 
   private scrollToActionZone() {
-    if (!this.actionAnchor) return;
+    const anchor = this.hideButton || this.actionAnchor;
+    if (!anchor) return;
 
-    const rect = this.actionAnchor.nativeElement.getBoundingClientRect();
+    const rect = anchor.nativeElement.getBoundingClientRect();
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-    const targetTop = window.pageYOffset + rect.bottom - viewportHeight + 16;
+    const targetTop = window.pageYOffset + rect.bottom - viewportHeight + 24;
 
     window.scrollTo({
       top: Math.max(0, Math.round(targetTop)),
